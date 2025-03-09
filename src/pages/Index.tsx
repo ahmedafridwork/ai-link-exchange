@@ -14,9 +14,9 @@ const Index = () => {
       <main className="pt-16">
         <HeroSection />
         
-        <div id="featured-content">
+{/*         <div id="featured-content">
           <FeaturedLinks />
-        </div>
+        </div> */}
         
         {/* How it works section */}
         <section className="py-16 bg-slate-50 dark:bg-slate-900/50">
