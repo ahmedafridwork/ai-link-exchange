@@ -42,6 +42,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithEmail = async (email: string, password: string) => {
     try {
+      // Validate email format
+      if (!email.includes('@') || !email.includes('.')) {
+        toast({
+          title: "Invalid Email",
+          description: "Please enter a valid email address.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -72,6 +82,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUpWithEmail = async (email: string, password: string, name: string, phone?: string) => {
     try {
+      // Validate email format
+      if (!email.includes('@') || !email.includes('.')) {
+        toast({
+          title: "Invalid Email",
+          description: "Please enter a valid email address.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Add additional validation for password strength if needed
+      if (password.length < 6) {
+        toast({
+          title: "Weak Password",
+          description: "Password should be at least 6 characters long.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -96,11 +126,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           description: "Your account has been created. Please check your email for verification.",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error signing up:', error);
       toast({
         title: "Sign Up Failed",
-        description: "An unexpected error occurred. Please try again.",
+        description: error?.message || "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     }

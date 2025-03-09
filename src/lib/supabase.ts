@@ -13,3 +13,30 @@ if ((!supabaseUrl || !supabaseAnonKey) && import.meta.env.PROD) {
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+console.log("Supabase client initialized with URL:", supabaseUrl);
+
+// Important information about Supabase configuration needed for the app to work:
+/*
+1. Create an 'ai_links' table in Supabase with the following schema:
+   - id (bigint, auto-increment, primary key)
+   - created_at (timestamp with time zone, default: now())
+   - title (text, nullable)
+   - description (text, nullable)
+   - url (text, nullable)
+   - tags (text, nullable)
+   - image (text, nullable)
+   - user_id (uuid, references auth.users.id)
+
+2. Set up Row Level Security (RLS) policies for the ai_links table:
+   - Enable RLS for the table
+   - Add a policy for SELECT: Allow users to read all records
+     - Using expression: true
+     - For operation: SELECT
+   - Add a policy for INSERT/UPDATE: Allow authenticated users to insert their own records
+     - Using expression: (auth.uid() = user_id)
+     - For operations: INSERT, UPDATE
+   - Add a policy for DELETE: Allow users to delete their own records
+     - Using expression: (auth.uid() = user_id)
+     - For operation: DELETE
+*/

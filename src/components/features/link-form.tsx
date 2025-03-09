@@ -24,10 +24,14 @@ export function LinkForm({ initialData, isEditing = false }: LinkFormProps) {
     title: initialData?.title || "",
     description: initialData?.description || "",
     url: initialData?.url || "",
-    tags: initialData?.tags?.split(',').filter(Boolean) || [],
+    tags: initialData?.tags || "",
     image: initialData?.image || "",
   });
   
+  // Track tags separately as an array for UI manipulation, but store as string in formData
+  const [tagArray, setTagArray] = useState<string[]>(
+    initialData?.tags ? initialData.tags.split(',').filter(Boolean) : []
+  );
   const [tagInput, setTagInput] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -78,10 +82,13 @@ export function LinkForm({ initialData, isEditing = false }: LinkFormProps) {
   };
   
   const handleAddTag = () => {
-    if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
+    if (tagInput.trim() && !tagArray.includes(tagInput.trim())) {
+      const newTagArray = [...tagArray, tagInput.trim()];
+      setTagArray(newTagArray);
+      // Update formData with comma-separated string of tags
       setFormData(prev => ({
         ...prev,
-        tags: [...prev.tags, tagInput.trim()]
+        tags: newTagArray.join(',')
       }));
       setTagInput("");
     }
@@ -95,9 +102,12 @@ export function LinkForm({ initialData, isEditing = false }: LinkFormProps) {
   };
   
   const handleRemoveTag = (tagToRemove: string) => {
+    const newTagArray = tagArray.filter(tag => tag !== tagToRemove);
+    setTagArray(newTagArray);
+    // Update formData with comma-separated string of tags
     setFormData(prev => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
+      tags: newTagArray.join(',')
     }));
   };
   
@@ -116,14 +126,8 @@ export function LinkForm({ initialData, isEditing = false }: LinkFormProps) {
     setIsSubmitting(true);
     
     try {
-      // Convert tags array to comma-separated string for storage
-      const tagsString = formData.tags.join(',');
-      
       if (isEditing && initialData?.id) {
-        await updateLink(initialData.id.toString(), {
-          ...formData,
-          tags: tagsString
-        });
+        await updateLink(initialData.id.toString(), formData);
         toast({
           title: "Success",
           description: "Link updated successfully!",
@@ -131,7 +135,6 @@ export function LinkForm({ initialData, isEditing = false }: LinkFormProps) {
       } else {
         await createLink({
           ...formData,
-          tags: tagsString,
           user_id: user.id,
         });
         toast({
@@ -240,9 +243,9 @@ export function LinkForm({ initialData, isEditing = false }: LinkFormProps) {
           </div>
           {errors.tags && <p className="text-red-500 text-sm">{errors.tags}</p>}
           
-          {formData.tags.length > 0 && (
+          {tagArray.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
-              {formData.tags.map((tag) => (
+              {tagArray.map((tag) => (
                 <div key={tag} className="bg-primary/10 text-primary dark:bg-primary/20 px-2 py-1 rounded-md text-sm flex items-center gap-1">
                   {tag}
                   <button

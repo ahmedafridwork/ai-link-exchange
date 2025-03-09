@@ -38,9 +38,19 @@ export async function fetchLinks(): Promise<AILink[]> {
 
 export async function createLink(link: Omit<AILink, 'id' | 'created_at'>): Promise<AILink | null> {
   try {
+    // Ensure we're not sending any undefined values
+    const cleanLink = {
+      title: link.title || '',
+      description: link.description || '',
+      url: link.url || '',
+      tags: link.tags || '',
+      image: link.image || '',
+      user_id: link.user_id,
+    };
+    
     const { data, error } = await supabase
       .from('ai_links')
-      .insert([link])
+      .insert([cleanLink])
       .select()
       .single();
 
