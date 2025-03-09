@@ -1,69 +1,40 @@
-# Welcome to your Lovable project
 
-## Project info
+# AI Link Exchange
 
-**URL**: https://lovable.dev/projects/ab1e75f4-6540-4600-91e1-b6980fd6d601
+A platform for sharing and discovering AI resources and tools.
 
-## How can I edit this code?
+## Supabase Setup Instructions
 
-There are several ways of editing your application.
+Follow these simple steps to set up Supabase for this project:
 
-**Use Lovable**
+1. Create a `.env` file in the root directory of the project
+2. Add the following environment variables to your `.env` file:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ab1e75f4-6540-4600-91e1-b6980fd6d601) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-**Edit a file directly in GitHub**
+3. Replace `your_supabase_url` and `your_supabase_anon_key` with the values from your Supabase project:
+   - Go to your Supabase dashboard: https://app.supabase.com/
+   - Select your project
+   - Go to Project Settings > API
+   - Copy the "Project URL" and paste it as `VITE_SUPABASE_URL`
+   - Copy the "anon public" key and paste it as `VITE_SUPABASE_ANON_KEY`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+4. Restart your development server
 
-**Use GitHub Codespaces**
+## Database Setup
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Make sure your Supabase database has a table called `ai_links` with the following structure:
 
-## What technologies are used for this project?
+- `id` (uuid, primary key)
+- `title` (text, not null)
+- `description` (text, not null)
+- `url` (text, not null)
+- `tags` (text array, not null)
+- `image` (text, nullable)
+- `user_id` (uuid, not null)
+- `created_at` (timestamp with time zone, default: now())
 
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/ab1e75f4-6540-4600-91e1-b6980fd6d601) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+You can create this table using the Supabase dashboard or SQL editor.
