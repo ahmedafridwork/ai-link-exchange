@@ -12,6 +12,7 @@ import EditLink from "./pages/EditLink";
 import MyLinks from "./pages/MyLinks";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import Discover from "./pages/Discover";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,8 @@ const App = () => (
             <Route path="/my-links" element={<MyLinks />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/signup" element={<Discover />} />
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
