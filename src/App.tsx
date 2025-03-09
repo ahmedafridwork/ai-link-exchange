@@ -10,6 +10,8 @@ import NotFound from "./pages/NotFound";
 import AddLink from "./pages/AddLink";
 import EditLink from "./pages/EditLink";
 import MyLinks from "./pages/MyLinks";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +27,8 @@ const App = () => (
             <Route path="/add-link" element={<AddLink />} />
             <Route path="/edit-link/:id" element={<EditLink />} />
             <Route path="/my-links" element={<MyLinks />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

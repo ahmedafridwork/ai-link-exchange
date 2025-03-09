@@ -3,11 +3,11 @@ import { supabase } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
 
 export interface AILink {
-  id?: string;
-  title: string;
-  description: string;
-  url: string;
-  tags: string[];
+  id?: number;
+  title?: string;
+  description?: string;
+  url?: string;
+  tags?: string;
   image?: string;
   user_id: string;
   created_at?: string;

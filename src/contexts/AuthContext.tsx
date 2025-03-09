@@ -7,7 +7,8 @@ import { toast } from '@/hooks/use-toast';
 type AuthContextType = {
   session: Session | null;
   user: User | null;
-  signIn: () => Promise<void>;
+  signInWithEmail: (email: string, password: string) => Promise<void>;
+  signUpWithEmail: (email: string, password: string, name: string, phone?: string) => Promise<void>;
   signOut: () => Promise<void>;
   loading: boolean;
 };
@@ -39,13 +40,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signIn = async () => {
+  const signInWithEmail = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'github',
-        options: {
-          redirectTo: `${window.location.origin}/`,
-        },
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
       
       if (error) {
@@ -54,11 +53,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           description: error.message,
           variant: "destructive",
         });
+        throw error;
+      } else {
+        toast({
+          title: "Signed In",
+          description: "You have successfully signed in.",
+        });
       }
     } catch (error) {
       console.error('Error signing in:', error);
       toast({
         title: "Sign In Failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const signUpWithEmail = async (email: string, password: string, name: string, phone?: string) => {
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name,
+            phone: phone || '',
+          },
+        },
+      });
+      
+      if (error) {
+        toast({
+          title: "Sign Up Failed",
+          description: error.message,
+          variant: "destructive",
+        });
+        throw error;
+      } else {
+        toast({
+          title: "Account Created",
+          description: "Your account has been created. Please check your email for verification.",
+        });
+      }
+    } catch (error) {
+      console.error('Error signing up:', error);
+      toast({
+        title: "Sign Up Failed",
         description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
@@ -91,7 +132,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, signIn, signOut, loading }}>
+    <AuthContext.Provider value={{ session, user, signInWithEmail, signUpWithEmail, signOut, loading }}>
       {children}
     </AuthContext.Provider>
   );

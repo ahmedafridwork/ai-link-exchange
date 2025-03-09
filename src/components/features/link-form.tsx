@@ -24,7 +24,7 @@ export function LinkForm({ initialData, isEditing = false }: LinkFormProps) {
     title: initialData?.title || "",
     description: initialData?.description || "",
     url: initialData?.url || "",
-    tags: initialData?.tags || [],
+    tags: initialData?.tags?.split(',').filter(Boolean) || [],
     image: initialData?.image || "",
   });
   
@@ -41,7 +41,10 @@ export function LinkForm({ initialData, isEditing = false }: LinkFormProps) {
             You need to be signed in to add or edit links.
           </AlertDescription>
         </Alert>
-        <Button onClick={() => navigate('/')}>Go Home</Button>
+        <div className="flex gap-3">
+          <Button onClick={() => navigate('/signin')}>Sign In</Button>
+          <Button variant="outline" onClick={() => navigate('/')}>Go Home</Button>
+        </div>
       </BlurCard>
     );
   }
@@ -49,28 +52,20 @@ export function LinkForm({ initialData, isEditing = false }: LinkFormProps) {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     
-    if (!formData.title.trim()) {
-      newErrors.title = "Title is required";
-    }
-    
-    if (!formData.description.trim()) {
+    // Only description is mandatory
+    if (!formData.description?.trim()) {
       newErrors.description = "Description is required";
-    } else if (formData.description.length < 30) {
-      newErrors.description = "Description should be at least 30 characters";
+    } else if (formData.description.length < 10) {
+      newErrors.description = "Description should be at least 10 characters";
     }
     
-    if (!formData.url.trim()) {
-      newErrors.url = "URL is required";
-    } else {
+    // URL validation only if provided
+    if (formData.url?.trim()) {
       try {
         new URL(formData.url);
       } catch (e) {
         newErrors.url = "Please enter a valid URL";
       }
-    }
-    
-    if (formData.tags.length === 0) {
-      newErrors.tags = "At least one tag is required";
     }
     
     setErrors(newErrors);
@@ -121,8 +116,14 @@ export function LinkForm({ initialData, isEditing = false }: LinkFormProps) {
     setIsSubmitting(true);
     
     try {
+      // Convert tags array to comma-separated string for storage
+      const tagsString = formData.tags.join(',');
+      
       if (isEditing && initialData?.id) {
-        await updateLink(initialData.id, formData);
+        await updateLink(initialData.id.toString(), {
+          ...formData,
+          tags: tagsString
+        });
         toast({
           title: "Success",
           description: "Link updated successfully!",
@@ -130,6 +131,7 @@ export function LinkForm({ initialData, isEditing = false }: LinkFormProps) {
       } else {
         await createLink({
           ...formData,
+          tags: tagsString,
           user_id: user.id,
         });
         toast({
@@ -155,12 +157,12 @@ export function LinkForm({ initialData, isEditing = false }: LinkFormProps) {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
           <label htmlFor="title" className="block text-sm font-medium">
-            Title <span className="text-red-500">*</span>
+            Title <span className="text-muted-foreground">(optional)</span>
           </label>
           <Input
             id="title"
             name="title"
-            value={formData.title}
+            value={formData.title || ""}
             onChange={handleChange}
             placeholder="Enter a descriptive title"
             className={errors.title ? "border-red-500" : ""}
@@ -175,7 +177,7 @@ export function LinkForm({ initialData, isEditing = false }: LinkFormProps) {
           <Textarea
             id="description"
             name="description"
-            value={formData.description}
+            value={formData.description || ""}
             onChange={handleChange}
             placeholder="Provide a detailed description of the AI resource"
             rows={4}
@@ -186,14 +188,14 @@ export function LinkForm({ initialData, isEditing = false }: LinkFormProps) {
         
         <div className="space-y-2">
           <label htmlFor="url" className="block text-sm font-medium">
-            URL <span className="text-red-500">*</span>
+            URL <span className="text-muted-foreground">(optional)</span>
           </label>
           <div className="flex items-center space-x-2">
             <LinkIcon size={16} className="text-muted-foreground" />
             <Input
               id="url"
               name="url"
-              value={formData.url}
+              value={formData.url || ""}
               onChange={handleChange}
               placeholder="https://example.com"
               className={errors.url ? "border-red-500" : ""}
@@ -204,12 +206,12 @@ export function LinkForm({ initialData, isEditing = false }: LinkFormProps) {
         
         <div className="space-y-2">
           <label htmlFor="image" className="block text-sm font-medium">
-            Image URL (optional)
+            Image URL <span className="text-muted-foreground">(optional)</span>
           </label>
           <Input
             id="image"
             name="image"
-            value={formData.image}
+            value={formData.image || ""}
             onChange={handleChange}
             placeholder="https://example.com/image.jpg"
           />
@@ -220,7 +222,7 @@ export function LinkForm({ initialData, isEditing = false }: LinkFormProps) {
         
         <div className="space-y-2">
           <label htmlFor="tags" className="block text-sm font-medium">
-            Tags <span className="text-red-500">*</span>
+            Tags <span className="text-muted-foreground">(optional)</span>
           </label>
           <div className="flex items-center space-x-2">
             <Tag size={16} className="text-muted-foreground" />

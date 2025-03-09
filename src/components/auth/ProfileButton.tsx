@@ -10,23 +10,32 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export function ProfileButton() {
-  const { user, signIn, signOut } = useAuth();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   
   if (!user) {
     return (
-      <Button onClick={signIn} variant="outline" size="sm" className="gap-2 text-sm">
-        <User size={14} /> Sign In
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button onClick={() => navigate('/signin')} variant="outline" size="sm" className="text-sm">
+          Sign In
+        </Button>
+        <Button onClick={() => navigate('/signup')} variant="default" size="sm" className="text-sm">
+          Sign Up
+        </Button>
+      </div>
     );
   }
 
-  const userInitials = user.email 
-    ? user.email.substring(0, 2).toUpperCase()
+  const userEmail = user.email || '';
+  const userInitials = userEmail 
+    ? userEmail.substring(0, 2).toUpperCase()
     : user.id.substring(0, 2).toUpperCase();
+  
+  const displayName = user.user_metadata?.full_name || userEmail || 'My Account';
   
   return (
     <DropdownMenu>
@@ -40,7 +49,7 @@ export function ProfileButton() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>
-          {user.user_metadata?.full_name || user.email || 'My Account'}
+          {displayName}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>

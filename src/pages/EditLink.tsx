@@ -1,22 +1,30 @@
 
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/layout/navbar";
 import { LinkForm } from "@/components/features/link-form";
 import { supabase } from "@/lib/supabase";
 import { AILink } from "@/services/postService";
 import { BlurCard } from "@/components/ui/blur-card";
 import { LoaderCircle } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const EditLink = () => {
   const { id } = useParams<{ id: string }>();
   const [link, setLink] = useState<AILink | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLink = async () => {
       try {
+        if (!user) {
+          navigate('/signin');
+          return;
+        }
+
         const { data, error } = await supabase
           .from('ai_links')
           .select('*')
@@ -24,6 +32,13 @@ const EditLink = () => {
           .single();
         
         if (error) throw error;
+        
+        // Check if the link belongs to the current user
+        if (data.user_id !== user.id) {
+          setError("You don't have permission to edit this link");
+          return;
+        }
+        
         setLink(data);
       } catch (err) {
         console.error('Error fetching link:', err);
@@ -36,7 +51,7 @@ const EditLink = () => {
     if (id) {
       fetchLink();
     }
-  }, [id]);
+  }, [id, user, navigate]);
 
   return (
     <div className="min-h-screen bg-background">
