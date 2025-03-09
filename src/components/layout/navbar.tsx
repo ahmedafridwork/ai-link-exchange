@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Menu, X, Search, Plus, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ProfileButton } from "@/components/auth/ProfileButton";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -50,8 +51,8 @@ export function Navbar() {
           <Link to="/discover" className="nav-link">
             Discover
           </Link>
-          <Link to="/about" className="nav-link">
-            About
+          <Link to="/my-links" className="nav-link">
+            My Links
           </Link>
         </div>
 
@@ -59,12 +60,12 @@ export function Navbar() {
           <Button variant="outline" size="sm" className="gap-2 text-sm">
             <Search size={14} /> Search
           </Button>
-          <Button size="sm" className="gap-2 text-sm">
-            <Plus size={14} /> Add Link
-          </Button>
-          <Button variant="ghost" size="sm">
-            Sign In
-          </Button>
+          <Link to="/add-link">
+            <Button size="sm" className="gap-2 text-sm">
+              <Plus size={14} /> Add Link
+            </Button>
+          </Link>
+          <ProfileButton />
         </div>
 
         {/* Mobile Menu Button */}
@@ -95,22 +96,24 @@ export function Navbar() {
               Discover
             </Link>
             <Link
-              to="/about"
+              to="/my-links"
               className="py-2 px-4 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              About
+              My Links
             </Link>
             <div className="flex flex-col gap-2 pt-2">
               <Button variant="outline" className="justify-start gap-2">
                 <Search size={16} /> Search
               </Button>
-              <Button className="justify-start gap-2">
-                <Plus size={16} /> Add Link
-              </Button>
-              <Button variant="ghost" className="justify-start">
-                Sign In
-              </Button>
+              <Link to="/add-link" onClick={() => setIsMobileMenuOpen(false)}>
+                <Button className="w-full justify-start gap-2">
+                  <Plus size={16} /> Add Link
+                </Button>
+              </Link>
+              <div className="py-2">
+                <ProfileButton />
+              </div>
             </div>
           </div>
         </div>
