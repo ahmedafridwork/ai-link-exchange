@@ -157,13 +157,19 @@ const MyLinks = () => {
                     </a>
                   )}
 
-                  {link.tags && link.tags.split(',').filter(Boolean).length > 0 && (
+                  {link.tags && (
                     <div className="flex flex-wrap gap-2 mt-4">
-                      {link.tags.split(',').filter(Boolean).map((tag, i) => (
-                        <div key={i} className="bg-primary/10 text-primary dark:bg-primary/20 px-2 py-1 rounded-md text-xs">
-                          {tag}
-                        </div>
-                      ))}
+                      {(typeof link.tags === 'string' 
+                        ? link.tags.split(',') 
+                        : Array.isArray(link.tags) 
+                          ? link.tags 
+                          : [])
+                        .filter(Boolean)
+                        .map((tag, i) => (
+                          <div key={i} className="bg-primary/10 text-primary dark:bg-primary/20 px-2 py-1 rounded-md text-xs">
+                            {typeof tag === 'string' ? tag.trim() : tag}
+                          </div>
+                        ))}
                     </div>
                   )}
                 </BlurCard>

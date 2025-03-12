@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { Navbar } from "@/components/layout/navbar";
 import { BlurCard } from "@/components/ui/blur-card";
 import { AILink, fetchAllLinks } from "@/services/postService";
-import { Link as LinkIcon, ExternalLink, LoaderCircle, Search } from "lucide-react";
+import { Link as LinkIcon, ExternalLink, LoaderCircle } from "lucide-react";
 import { SearchBar } from "@/components/features/search-bar";
 
 const Discover = () => {
@@ -44,25 +44,27 @@ const Discover = () => {
     const searchLower = searchQuery.toLowerCase();
     
     // Search in title
-    if (link.title?.toLowerCase().includes(searchLower)) return true;
+    if (link.title && link.title.toLowerCase().includes(searchLower)) return true;
     
     // Search in description
-    if (link.description?.toLowerCase().includes(searchLower)) return true;
+    if (link.description && link.description.toLowerCase().includes(searchLower)) return true;
     
     // Search in tags
     if (link.tags) {
-      const tags = typeof link.tags === 'string' ? link.tags.split(',') : link.tags;
-      if (Array.isArray(tags)) {
-        for (const tag of tags) {
+      if (typeof link.tags === 'string') {
+        const tagArray = link.tags.split(',');
+        for (const tag of tagArray) {
           if (tag.trim().toLowerCase().includes(searchLower)) return true;
         }
-      } else if (typeof tags === 'string' && tags.toLowerCase().includes(searchLower)) {
-        return true;
+      } else if (Array.isArray(link.tags)) {
+        for (const tag of link.tags) {
+          if (typeof tag === 'string' && tag.trim().toLowerCase().includes(searchLower)) return true;
+        }
       }
     }
     
     // Search in URL
-    if (link.url?.toLowerCase().includes(searchLower)) return true;
+    if (link.url && link.url.toLowerCase().includes(searchLower)) return true;
     
     return false;
   });
@@ -133,7 +135,11 @@ const Discover = () => {
 
                   {link.tags && (
                     <div className="flex flex-wrap gap-2 mt-4">
-                      {(typeof link.tags === 'string' ? link.tags.split(',') : link.tags)
+                      {(typeof link.tags === 'string' 
+                        ? link.tags.split(',') 
+                        : Array.isArray(link.tags) 
+                          ? link.tags 
+                          : [])
                         .filter(Boolean)
                         .map((tag, i) => (
                           <div key={i} className="bg-primary/10 text-primary dark:bg-primary/20 px-2 py-1 rounded-md text-xs">

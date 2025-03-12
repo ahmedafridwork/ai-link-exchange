@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, Plus, Github } from "lucide-react";
+import { Menu, X, Plus, Github, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ProfileButton } from "@/components/auth/ProfileButton";

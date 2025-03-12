@@ -30,7 +30,11 @@ export function LinkForm({ initialData, isEditing = false }: LinkFormProps) {
   
   // Track tags separately as an array for UI manipulation, but store as string in formData
   const [tagArray, setTagArray] = useState<string[]>(
-    initialData?.tags ? initialData.tags.split(',').filter(Boolean) : []
+    typeof initialData?.tags === 'string' 
+      ? initialData.tags.split(',').filter(Boolean) 
+      : Array.isArray(initialData?.tags) 
+        ? initialData.tags.filter(tag => typeof tag === 'string') as string[]
+        : []
   );
   const [tagInput, setTagInput] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
