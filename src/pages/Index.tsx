@@ -95,7 +95,7 @@ const Index = () => {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-6 md:mb-0">
               <div className="text-xl font-bold flex items-center">
-                <span className="text-primary mr-1">AI</span>Link Exchange
+                <span className="text-primary mr-1">Share</span>Deepseek
               </div>
               <p className="text-muted-foreground text-sm mt-2">
                 A community for AI enthusiasts
@@ -132,7 +132,7 @@ const Index = () => {
           </div>
           
           <div className="border-t border-border/40 mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} AI Link Exchange. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} Share Deepseek. All rights reserved.</p>
           </div>
         </div>
       </footer>

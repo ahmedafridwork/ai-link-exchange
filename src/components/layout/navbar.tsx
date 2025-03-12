@@ -35,9 +35,9 @@ export function Navbar() {
             to="/" 
             className="text-xl font-bold tracking-tight flex items-center"
           >
-            <span className="text-primary mr-1">AI</span>
+            <span className="text-primary mr-1">Share</span>
             <span className="relative">
-              Link Exchange
+              Deepseek
               <span className="absolute -bottom-1 left-0 w-full h-px bg-gradient-to-r from-primary/80 to-transparent"></span>
             </span>
           </Link>

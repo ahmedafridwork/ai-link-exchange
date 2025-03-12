@@ -1,5 +1,5 @@
 
-# AI Link Exchange
+# Share Deepseek
 
 A platform for sharing and discovering AI resources and tools.
 
@@ -59,4 +59,3 @@ This project uses Supabase Authentication with email/password. Users can:
 - Edit your own AI resources
 - Delete your own AI resources
 - Responsive design for all devices
-
