@@ -13,6 +13,29 @@ export interface AILink {
   created_at?: string;
 }
 
+export async function fetchAllLinks(): Promise<AILink[]> {
+  try {
+    const { data, error } = await supabase
+      .from('ai_links')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      throw error;
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching all links:', error);
+    toast({
+      title: "Failed to load links",
+      description: "There was an error loading the AI links. Please try again.",
+      variant: "destructive",
+    });
+    return [];
+  }
+}
+
 export async function fetchLinks(): Promise<AILink[]> {
   try {
     const { data, error } = await supabase

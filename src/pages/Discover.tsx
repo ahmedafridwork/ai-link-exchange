@@ -1,7 +1,7 @@
+
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { BlurCard } from "@/components/ui/blur-card";
-import { Button } from "@/components/ui/button";
 import { AILink, fetchAllLinks } from "@/services/postService";
 import { Link as LinkIcon, ExternalLink, LoaderCircle, Search } from "lucide-react";
 
@@ -15,6 +15,7 @@ const Discover = () => {
       try {
         const allLinks = await fetchAllLinks();
         setLinks(allLinks);
+        console.log("Loaded links:", allLinks);
       } catch (error) {
         console.error("Error loading links:", error);
       } finally {
@@ -25,7 +26,8 @@ const Discover = () => {
   }, []);
 
   const filteredLinks = links.filter((link) =>
-    link.title.toLowerCase().includes(searchQuery.toLowerCase())
+    link.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    link.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -60,9 +62,15 @@ const Discover = () => {
           ) : filteredLinks.length === 0 ? (
             <BlurCard className="p-8 text-center">
               <h2 className="text-xl font-semibold mb-4">No links found</h2>
-              <p className="text-muted-foreground">
-                Try searching for a different keyword.
-              </p>
+              {searchQuery ? (
+                <p className="text-muted-foreground">
+                  Try searching for a different keyword.
+                </p>
+              ) : (
+                <p className="text-muted-foreground">
+                  No links have been added yet. Be the first to share an AI resource!
+                </p>
+              )}
             </BlurCard>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -92,7 +100,7 @@ const Discover = () => {
                     <div className="flex flex-wrap gap-2 mt-4">
                       {link.tags.split(',').map((tag, i) => (
                         <div key={i} className="bg-primary/10 text-primary dark:bg-primary/20 px-2 py-1 rounded-md text-xs">
-                          {tag}
+                          {tag.trim()}
                         </div>
                       ))}
                     </div>

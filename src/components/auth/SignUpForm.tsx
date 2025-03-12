@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { BlurCard } from "@/components/ui/blur-card";
 import { toast } from "@/hooks/use-toast";
 import { Mail, Key, User, Phone, UserPlus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export function SignUpForm() {
   const [email, setEmail] = useState("");
@@ -15,6 +15,7 @@ export function SignUpForm() {
   const [phone, setPhone] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { signUpWithEmail } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,9 +28,37 @@ export function SignUpForm() {
       return;
     }
 
+    // Basic email validation
+    if (!email.includes('@') || !email.includes('.')) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Password validation
+    if (password.length < 6) {
+      toast({
+        title: "Weak Password",
+        description: "Password should be at least 6 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await signUpWithEmail(email, password, name, phone);
+      // After signup, navigate to sign in page
+      toast({
+        title: "Account Created",
+        description: "Please sign in with your new account.",
+      });
+      setTimeout(() => navigate("/signin"), 1500);
+    } catch (error) {
+      console.error("Error in signup form:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -87,8 +116,9 @@ export function SignUpForm() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Create a password"
+              placeholder="Create a password (min 6 characters)"
               required
+              minLength={6}
             />
           </div>
         </div>

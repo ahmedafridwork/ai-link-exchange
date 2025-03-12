@@ -47,11 +47,11 @@ export function FeaturedLinks() {
             {links.map((link, index) => (
               <LinkCard
                 key={link.id}
-                title={link.title}
-                description={link.description}
-                url={link.url}
-                tags={link.tags}
-                image={link.image}
+                title={link.title || ""}
+                description={link.description || ""}
+                url={link.url || ""}
+                tags={link.tags || ""}
+                image={link.image || ""}
                 index={index}
               />
             ))}

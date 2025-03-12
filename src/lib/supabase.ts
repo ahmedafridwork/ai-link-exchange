@@ -26,7 +26,7 @@ console.log("Supabase client initialized with URL:", supabaseUrl);
    - url (text, nullable)
    - tags (text, nullable)
    - image (text, nullable)
-   - user_id (uuid, references auth.users.id)
+   - user_id (uuid, nullable, references auth.users.id)
 
 2. Set up Row Level Security (RLS) policies for the ai_links table:
    - Enable RLS for the table
@@ -39,4 +39,9 @@ console.log("Supabase client initialized with URL:", supabaseUrl);
    - Add a policy for DELETE: Allow users to delete their own records
      - Using expression: (auth.uid() = user_id)
      - For operation: DELETE
+
+3. If you're having issues with signup or data insertion, check:
+   - Email confirmations are disabled in Authentication > Settings
+   - RLS policies are correctly set up as described above
+   - The foreign key constraint is properly configured
 */

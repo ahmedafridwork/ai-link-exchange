@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 type AuthContextType = {
   session: Session | null;
@@ -52,12 +53,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       
       if (error) {
+        console.error("Sign in error:", error);
         toast({
           title: "Sign In Failed",
           description: error.message,
@@ -65,16 +67,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
         throw error;
       } else {
+        console.log("Sign in successful:", data);
         toast({
           title: "Signed In",
           description: "You have successfully signed in.",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error signing in:', error);
       toast({
         title: "Sign In Failed",
-        description: "An unexpected error occurred. Please try again.",
+        description: error?.message || "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     }
@@ -82,6 +85,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUpWithEmail = async (email: string, password: string, name: string, phone?: string) => {
     try {
+      console.log("Sign up attempt with:", { email, password: "***", name, phone });
+      
       // Validate email format
       if (!email.includes('@') || !email.includes('.')) {
         toast({
@@ -102,7 +107,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -112,6 +117,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           },
         },
       });
+      
+      console.log("Sign up response:", { data, error });
       
       if (error) {
         toast({
@@ -123,7 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         toast({
           title: "Account Created",
-          description: "Your account has been created. Please check your email for verification.",
+          description: "Your account has been created successfully.",
         });
       }
     } catch (error: any) {
@@ -151,11 +158,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           description: "You have been successfully signed out.",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error signing out:', error);
       toast({
         title: "Sign Out Failed",
-        description: "An unexpected error occurred. Please try again.",
+        description: error?.message || "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     }
