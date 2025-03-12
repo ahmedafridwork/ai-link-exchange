@@ -1,14 +1,18 @@
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Navbar } from "@/components/layout/navbar";
 import { BlurCard } from "@/components/ui/blur-card";
 import { AILink, fetchAllLinks } from "@/services/postService";
 import { Link as LinkIcon, ExternalLink, LoaderCircle, Search } from "lucide-react";
+import { SearchBar } from "@/components/features/search-bar";
 
 const Discover = () => {
   const [links, setLinks] = useState<AILink[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchQuery = searchParams.get("search") || "";
+  const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
 
   useEffect(() => {
     const loadLinks = async () => {
@@ -25,10 +29,43 @@ const Discover = () => {
     loadLinks();
   }, []);
 
-  const filteredLinks = links.filter((link) =>
-    link.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    link.description?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    // Update local search when URL param changes
+    setLocalSearchQuery(searchQuery);
+  }, [searchQuery]);
+
+  const handleSearch = (query: string) => {
+    setSearchParams(query ? { search: query } : {});
+  };
+
+  const filteredLinks = links.filter((link) => {
+    if (!searchQuery) return true;
+    
+    const searchLower = searchQuery.toLowerCase();
+    
+    // Search in title
+    if (link.title?.toLowerCase().includes(searchLower)) return true;
+    
+    // Search in description
+    if (link.description?.toLowerCase().includes(searchLower)) return true;
+    
+    // Search in tags
+    if (link.tags) {
+      const tags = typeof link.tags === 'string' ? link.tags.split(',') : link.tags;
+      if (Array.isArray(tags)) {
+        for (const tag of tags) {
+          if (tag.trim().toLowerCase().includes(searchLower)) return true;
+        }
+      } else if (typeof tags === 'string' && tags.toLowerCase().includes(searchLower)) {
+        return true;
+      }
+    }
+    
+    // Search in URL
+    if (link.url?.toLowerCase().includes(searchLower)) return true;
+    
+    return false;
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -42,15 +79,13 @@ const Discover = () => {
                 Explore AI resource links shared by the community.
               </p>
             </div>
-            <div className="relative w-full md:w-80">
-              <input
-                type="text"
+            <div className="w-full md:w-80">
+              <SearchBar 
+                inline={true} 
+                className="w-full" 
                 placeholder="Search links..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full p-2 pr-10 border rounded-md text-sm"
+                onSearch={handleSearch}
               />
-              <Search size={16} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
             </div>
           </div>
 
@@ -64,7 +99,7 @@ const Discover = () => {
               <h2 className="text-xl font-semibold mb-4">No links found</h2>
               {searchQuery ? (
                 <p className="text-muted-foreground">
-                  Try searching for a different keyword.
+                  No results found for "{searchQuery}". Try searching for a different keyword.
                 </p>
               ) : (
                 <p className="text-muted-foreground">
@@ -96,12 +131,14 @@ const Discover = () => {
                     </a>
                   )}
 
-                  {link.tags && link.tags.split(',').filter(Boolean).length > 0 && (
+                  {link.tags && (
                     <div className="flex flex-wrap gap-2 mt-4">
-                      {link.tags.split(',').map((tag, i) => (
-                        <div key={i} className="bg-primary/10 text-primary dark:bg-primary/20 px-2 py-1 rounded-md text-xs">
-                          {tag.trim()}
-                        </div>
+                      {(typeof link.tags === 'string' ? link.tags.split(',') : link.tags)
+                        .filter(Boolean)
+                        .map((tag, i) => (
+                          <div key={i} className="bg-primary/10 text-primary dark:bg-primary/20 px-2 py-1 rounded-md text-xs">
+                            {typeof tag === 'string' ? tag.trim() : tag}
+                          </div>
                       ))}
                     </div>
                   )}
@@ -113,6 +150,6 @@ const Discover = () => {
       </main>
     </div>
   );
-};
+}
 
 export default Discover;

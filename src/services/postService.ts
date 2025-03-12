@@ -7,7 +7,7 @@ export interface AILink {
   title?: string;
   description?: string;
   url?: string;
-  tags?: string;
+  tags?: string | string[];
   image?: string;
   user_id: string;
   created_at?: string;

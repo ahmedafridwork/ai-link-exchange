@@ -1,14 +1,17 @@
 
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Menu, X, Search, Plus, Github } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Menu, X, Plus, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ProfileButton } from "@/components/auth/ProfileButton";
+import { SearchBar } from "@/components/features/search-bar";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,6 +22,10 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const toggleSearch = () => {
+    setShowSearch(!showSearch);
+  };
 
   return (
     <header
@@ -57,9 +64,15 @@ export function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-4">
-          <Button variant="outline" size="sm" className="gap-2 text-sm">
-            <Search size={14} /> Search
-          </Button>
+          {showSearch ? (
+            <div className="w-64 transition-all duration-300">
+              <SearchBar inline={true} className="w-full" placeholder="Search..." />
+            </div>
+          ) : (
+            <Button variant="outline" size="sm" className="gap-2 text-sm" onClick={toggleSearch}>
+              <Search size={14} /> Search
+            </Button>
+          )}
           <Link to="/add-link">
             <Button size="sm" className="gap-2 text-sm">
               <Plus size={14} /> Add Link
@@ -81,6 +94,9 @@ export function Navbar() {
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-white dark:bg-slate-900 shadow-lg animate-fade-in">
           <div className="container mx-auto py-4 px-6 flex flex-col space-y-4">
+            <div className="py-2">
+              <SearchBar inline={true} placeholder="Search..." />
+            </div>
             <Link
               to="/"
               className="py-2 px-4 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md"
@@ -103,9 +119,6 @@ export function Navbar() {
               My Links
             </Link>
             <div className="flex flex-col gap-2 pt-2">
-              <Button variant="outline" className="justify-start gap-2">
-                <Search size={16} /> Search
-              </Button>
               <Link to="/add-link" onClick={() => setIsMobileMenuOpen(false)}>
                 <Button className="w-full justify-start gap-2">
                   <Plus size={16} /> Add Link

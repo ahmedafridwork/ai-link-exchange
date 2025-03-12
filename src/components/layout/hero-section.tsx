@@ -4,6 +4,7 @@ import { ArrowDown } from "lucide-react";
 import { SearchBar } from "@/components/features/search-bar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 export function HeroSection() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -76,12 +77,16 @@ export function HeroSection() {
           )}
             style={{ animationDelay: '400ms' }}
           >
-            <Button size="lg" className="gap-2">
-              Join the Community
-            </Button>
-            <Button size="lg" variant="outline" className="gap-2">
-              Browse Resources
-            </Button>
+            <Link to="/signup">
+              <Button size="lg" className="gap-2">
+                Join the Community
+              </Button>
+            </Link>
+            <Link to="/discover">
+              <Button size="lg" variant="outline" className="gap-2">
+                Browse Resources
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
